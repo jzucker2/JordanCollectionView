@@ -73,7 +73,6 @@ class CustomLayout: UICollectionViewLayout {
     var layoutInfo = LayoutInfo()
     
     var contentSize: CGSize = .zero
-    //var layoutInfo: [String: [IndexPath: UICollectionViewLayoutAttributes]]
     
     required override init() {
         super.init()
@@ -90,15 +89,8 @@ class CustomLayout: UICollectionViewLayout {
     
     override func prepare() {
         super.prepare()
-        /*
-        collectionView.flatMap { (<#Wrapped#>) -> U? in
-            <#code#>
-        }
-        guard let fetchedObjects = collectionView. else {
-            contentSize = .zero
-            return
-        }
- */
+        print(#function)
+
         var totalNumberOfObjects = 0
         guard let sections = collectionView?.numberOfSections else {
             contentSize = .zero
@@ -132,6 +124,8 @@ class CustomLayout: UICollectionViewLayout {
         let supplementaryWidth = contentSize.width/2
         let supplementaryHeight = CGFloat(integerLiteral: 200)
         
+        contentSize.height += supplementaryHeight
+        
         let leftAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "Left", with: supplementaryIndexPath)
         let rightAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: "Right", with: supplementaryIndexPath)
         
@@ -154,57 +148,13 @@ class CustomLayout: UICollectionViewLayout {
                 allAttributes[itemIndexPath] = attributes
             }
         }
-        /*
-        for (index, item) in fetchedObjects.enumerated() {
-            let itemIndexPath = fetchedResultsController.indexPath(forObject: item)!
-            let attributes = UICollectionViewLayoutAttributes(forCellWith: itemIndexPath)
-            let y = CGFloat(integerLiteral: itemIndexPath.item) * Cell.debugHeight + supplementaryHeight
-            attributes.frame = CGRect(x: 0.0, y: y, width: contentSize.width, height: Cell.debugHeight)
-            
-            attributes.zIndex = index
-            allAttributes[itemIndexPath] = attributes
-        }
- */
         
         layoutInfo.items = allAttributes
-        
+        print("end of \(#function)")
     }
     
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        /*
-        let superAttributes = super.layoutAttributesForElements(in: rect)
-        guard let fetchedObjects = fetchedResultsController.fetchedObjects else {
-            return nil
-        }
-        
-        var allAttributes = [UICollectionViewLayoutAttributes]()
-        for (index, item) in fetchedObjects.enumerated() {
-            let itemIndexPath = fetchedResultsController.indexPath(forObject: item)!
-            let attributes = UICollectionViewLayoutAttributes(forCellWith: itemIndexPath)
-            let y = CGFloat(integerLiteral: itemIndexPath.item) * Cell.debugHeight
-            attributes.frame = CGRect(x: 0.0, y: y, width: contentSize.width, height: Cell.debugHeight)
-            
-            attributes.zIndex = index
-            allAttributes.append(attributes)
-        }
-        
-        print("\(#function) superAttributes: \(superAttributes) allAttributes: \(allAttributes) in rect: \(rect)")
-        return allAttributes
- */
-        /*
-        NSMutableArray *myAttributes [NSMutableArray arrayWithCapacity:self.layoutInformation.count];
-        for(NSString *key in self.layoutInformation){
-            NSDictionary *attributesDict = [self.layoutInformation objectForKey:key];
-            for(NSIndexPath *key in attributesDict){
-                UICollectionViewLayoutAttributes *attributes =
-                    [attributesDict objectForKey:key];
-                if(CGRectIntersectsRect(rect, attributes.frame)){
-                    [attributes addObject:attributes];
-                }
-            }
-        }
-        return myAttributes;
- */
+        print("\(#function) in rect: \(rect)")
         var returningAttributes = [UICollectionViewLayoutAttributes]()
         
         func appendIntersectingAttributes(comparing attributes: [IndexPath: UICollectionViewLayoutAttributes]?) {
@@ -222,45 +172,17 @@ class CustomLayout: UICollectionViewLayout {
         appendIntersectingAttributes(comparing: layoutInfo.rightSupplementaryViews)
         appendIntersectingAttributes(comparing: layoutInfo.leftSupplementaryViews)
         
-        
-        
-        /*
-        guard let currentItems = layoutInfo.items else {
-            return nil
-        }
-        for (_, itemAttributes) in currentItems {
-            if itemAttributes.frame.intersects(rect) {
-                returningAttributes.append(itemAttributes)
-            }
-        }
-        
-        guard let leftViews = layoutInfo.leftSupplementaryViews else {
-            return returningAttributes
-        }
-        
-        for
-        
-        guard let rightViews = layoutInfo.rightSupplementaryViews else {
-            return returningAttributes
-        }
- */
-        
+        print("end of \(#function)")
         return returningAttributes
     }
     
     override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        let attributes = super.layoutAttributesForItem(at: indexPath)
-        print("\(#function) attributes: \(attributes) with indexPath: \(indexPath)")
-        //return attributes
-        //return self.layoutInfo[@"MyCellKind"][indexPath];
-        //return layoutInfo[Cell.reuseIdentifier()]?[indexPath]
+        print("\(#function) indexPath: \(indexPath)")
         return layoutInfo.items?[indexPath]
     }
     
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        //let attributes = super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
-        //print("\(#function) attributes: \(attributes) with kind: \(elementKind) at indexPath: \(indexPath)")
-        //return attributes
+        print(#function)
         switch elementKind {
         case "Left":
             return layoutInfo.leftSupplementaryViews?[indexPath]
@@ -273,7 +195,7 @@ class CustomLayout: UICollectionViewLayout {
     
     override func prepare(forCollectionViewUpdates updateItems: [UICollectionViewUpdateItem]) {
         super.prepare(forCollectionViewUpdates: updateItems)
-        print("################### \(#function)")
+        print("################### \(#function) updateItems: \(updateItems)")
     }
     
     override func finalizeCollectionViewUpdates() {
@@ -292,53 +214,17 @@ class CustomLayout: UICollectionViewLayout {
         return true
     }
  */
-    
-    // MARK: - NSFetchedResultsControllerDelegate
-    
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        
-    }
 }
 
 class CustomCollectionViewController: UIViewController, UICollectionViewDelegate {
     
-    class UpdateOperation: Operation {
-        
-    }
-    
-    private lazy var operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "FetchedResultsQueue"
-        queue.qualityOfService = .userInitiated
-        queue.maxConcurrentOperationCount = 3
-        return queue
-    }()
-    
-    //typealias ItemCellFactory = ViewFactory<Item, Cell>
-    //typealias ItemSupplementaryViewFactory = ViewFactory<Item, SupplementaryCell>
     var dataSourceProvider: DataSourceProvider<FetchedResultsController<Item>, ItemCellFactory, ComposedCollectionSupplementaryViewFactory>!
     
     var delegateProvider: FetchedResultsDelegateProvider<ItemCellFactory>!
     
     
-    var blockOperations: [BlockOperation]?
     var collectionView: UICollectionView!
     var fetchedResultsController: FetchedResultsController<Item>!
-    
-    /*
-    lazy var fetchedResultsController: NSFetchedResultsController<Item> = {
-        let allResultsFetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
-        let creationDateSortDescriptor = NSSortDescriptor(key: #keyPath(Item.creationDate), ascending: false)
-        allResultsFetchRequest.sortDescriptors = [creationDateSortDescriptor]
-        let creatingFetchedResultsController = NSFetchedResultsController(fetchRequest: allResultsFetchRequest, managedObjectContext: UIApplication.shared.viewContext, sectionNameKeyPath: nil, cacheName: nil)
-        //creatingFetchedResultsController.delegate = self
-        return creatingFetchedResultsController
-    }()
- */
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         fatalError()
@@ -346,10 +232,6 @@ class CustomCollectionViewController: UIViewController, UICollectionViewDelegate
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-    }
-    
-    deinit {
-        operationQueue.cancelAllOperations()
     }
     
     override func viewDidLoad() {
@@ -382,14 +264,6 @@ class CustomCollectionViewController: UIViewController, UICollectionViewDelegate
         
         print(rightViewFactory.reuseIdentifier)
         
-        /*
-         typealias ThingCellFactory = ViewFactory<Thing, CollectionViewCell>
-         typealias ThingSupplementaryViewFactory = ComposedCollectionSupplementaryViewFactory<Thing>
-         var dataSourceProvider: DataSourceProvider<FetchedResultsController<Thing>, ThingCellFactory, ThingSupplementaryViewFactory>!
-         
-         var delegateProvider: FetchedResultsDelegateProvider<ThingCellFactory>!
-         */
-        
         delegateProvider = FetchedResultsDelegateProvider(cellFactory: cellFactory, collectionView: collectionView)
         
         let allResultsFetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
@@ -400,11 +274,6 @@ class CustomCollectionViewController: UIViewController, UICollectionViewDelegate
         
         dataSourceProvider = DataSourceProvider(dataSource: fetchedResultsController, cellFactory: cellFactory, supplementaryFactory: composedViewFactory)
         
-        
-        //self.collectionView = UICollectionView(frame: frame, collectionViewLayout: layout)
-        //collectionView.dataSource = self
-        //collectionView.delegate = self
-        
         collectionView.backgroundColor = UIColor.cyan
         collectionView.register(Cell.self, forCellWithReuseIdentifier: Cell.reuseIdentifier())
         //collectionView.register(HeaderCell.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: HeaderCell.reuseIdentifier())
@@ -414,9 +283,6 @@ class CustomCollectionViewController: UIViewController, UICollectionViewDelegate
         collectionView.delegate = self
         view.addSubview(collectionView)
         
-        //collectionView.dataSource = dataSourceProvider.colle
-        
-        //collectionView.reloadData()
         do {
             try fetchedResultsController.performFetch()
         } catch {
